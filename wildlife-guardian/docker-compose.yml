@@ -1,0 +1,30 @@
+version: "3.9"
+
+services:
+  backend:
+    build: ./backend
+    container_name: wildlife-guardian-api
+    ports:
+      - "8000:8000"
+    environment:
+      - DATABASE_URL=sqlite:////app/data/wildlife_guardian.db
+      - ENVIRONMENT=production
+      - CORS_ORIGINS=http://localhost:8080
+      - SMS_PROVIDER=simulated
+    volumes:
+      - backend_data:/app/data
+    restart: unless-stopped
+
+  frontend:
+    image: nginx:1.27-alpine
+    container_name: wildlife-guardian-web
+    ports:
+      - "8080:80"
+    volumes:
+      - ./frontend:/usr/share/nginx/html:ro
+    depends_on:
+      - backend
+    restart: unless-stopped
+
+volumes:
+  backend_data:
